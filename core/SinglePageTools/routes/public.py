@@ -16,11 +16,7 @@ import core.config as c
 from core.extensions import db
 
 
-try:
-    from config import jobsInfo, JobsSecrets
-except:
-    jobsInfo = None
-    JobsSecrets = None
+
 
 @bp.route('/')
 def Index():
@@ -28,7 +24,7 @@ def Index():
 
 @bp.route('/jobspayouts')
 def JobsPayouts():
-    return render_template("SinglePageTools/public/jobspayout.html", Info = jobsInfo, Secrets = JobsSecrets)
+    return render_template("SinglePageTools/public/jobspayout.html", Info = c.jobsInfo, Secrets = c.JobsSecrets)
 
 @bp.route('/blockspeed')
 def BlockSpeed():
