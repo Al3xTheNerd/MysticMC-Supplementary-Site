@@ -8,7 +8,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict
 
-url_base = "htps://items.mysticmc.co/"
+url_base = "https://items.mysticmc.co/"
 
 @dataclass
 class Item:
