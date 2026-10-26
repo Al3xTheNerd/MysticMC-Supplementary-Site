@@ -264,7 +264,8 @@
                                 <option value="">Create a new Group First!</option>
                                 {% else %}
                                 {% for group in currentMiscGroups %}
-                                <option value="{{ group.id }}" {% if item.ConnectedItems==group.id|string %} selected{%endif%}>{{
+                                <option value="{{ group.id }}" {% if item.ConnectedItems==group.id|string %}
+                                    selected{%endif%}>{{
                                     group.GroupName }}</option>
                                 {% endfor %}
                                 {% endif %}
@@ -280,7 +281,7 @@
                                 {% else %}
                                 {% for group in currentMiscGroups %}
                                 {% if item.ConnectedItems==group.id|string %}
-                                <option value="{{ group.id }}"}>{{ group.GroupName }}</option>
+                                <option value="{{ group.id }}" }>{{ group.GroupName }}</option>
                                 {%endif%}
                                 {% endfor %}
                                 {% endif %}
@@ -300,20 +301,20 @@
                         </div>
                         {% else %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="ItemNameGroup"
-                                placeholder="Item Name" value="{{item.ItemName}}" disabled>
+                            <input type="text" class="form-control" id="ItemNameGroup" placeholder="Item Name"
+                                value="{{item.ItemName}}" disabled>
                             <label for="ItemNameGroup">Item Name</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="ItemNameHTMLGroup"
-                                placeholder="Item Name HTML" value="{{item.ItemNameHTML}}" disabled>
+                            <input type="text" class="form-control" id="ItemNameHTMLGroup" placeholder="Item Name HTML"
+                                value="{{item.ItemNameHTML}}" disabled>
                             <label for="ItemNameHTMLGroup">Item Name HTML</label>
                         </div>
                         {% endif %}
                         {% if current_user.has_permission("edit_item_rarity") %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name='Rarity' id="RarityGroup"
-                                placeholder="Rarity" value="{{item.RarityHuman}}">
+                            <input type="text" class="form-control" name='Rarity' id="RarityGroup" placeholder="Rarity"
+                                value="{{item.RarityHuman}}">
                             <label for="RarityGroup">Rarity</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -323,13 +324,13 @@
                         </div>
                         {% else %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="RarityGroup"
-                                placeholder="Rarity" value="{{item.RarityHuman}}" disabled>
+                            <input type="text" class="form-control" id="RarityGroup" placeholder="Rarity"
+                                value="{{item.RarityHuman}}" disabled>
                             <label for="RarityGroup">Rarity</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="RarityHTMLGroup"
-                                placeholder="Rarity HTML" value="{{item.RarityHTML}}" disabled>
+                            <input type="text" class="form-control" id="RarityHTMLGroup" placeholder="Rarity HTML"
+                                value="{{item.RarityHTML}}" disabled>
                             <label for="RarityHTMLGroup">Rarity HTML</label>
                         </div>
                         {% endif %}
@@ -341,8 +342,8 @@
                         </div>
                         {% else %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="WinPercentageGroup"
-                                placeholder="Win Percentage" value="{{item.WinPercentage}}" disabled>
+                            <input type="text" class="form-control" id="WinPercentageGroup" placeholder="Win Percentage"
+                                value="{{item.WinPercentage}}" disabled>
                             <label for="WinPercentageGroup">Win Percentage</label>
                         </div>
                         {% endif %}
@@ -354,21 +355,23 @@
                         </div>
                         {% else %}
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="EfficiencyGroup"
-                                placeholder="Efficiency" value="{{item.EfficiencyLevel}}" disabled>
+                            <input type="text" class="form-control" id="EfficiencyGroup" placeholder="Efficiency"
+                                value="{{item.EfficiencyLevel}}" disabled>
                             <label for="EfficiencyGroup">Efficiency</label>
                         </div>
                         {% endif %}
                         {% if current_user.has_permission("edit_item_submerged_attribute") %}
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" name='Submerged' id="SubmergedGroup"
-                                placeholder="Submerged Mining Speed Attribute" value="{{item.SubmergedMiningSpeedAttribute}}">
+                                placeholder="Submerged Mining Speed Attribute"
+                                value="{{item.SubmergedMiningSpeedAttribute}}">
                             <label for="SubmergedGroup">Submerged Mining Speed Attribute</label>
                         </div>
                         {% else %}
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="SubmergedGroup"
-                                placeholder="Submerged Mining Speed Attribute" value="{{item.SubmergedMiningSpeedAttribute}}" disabled>
+                                placeholder="Submerged Mining Speed Attribute"
+                                value="{{item.SubmergedMiningSpeedAttribute}}" disabled>
                             <label for="SubmergedGroup">Submerged Mining Speed Attribute</label>
                         </div>
                         {% endif %}
@@ -418,6 +421,19 @@
 {% block scripts %}
 {% if current_user.has_permission("edit_item_raw") %}
 <script>
+
+
+    function setValueIfEmpty(elementId, newValue) {
+        const element = document.getElementById(elementId);
+
+        if (!element || element.disabled) return;
+        if (newValue === null || newValue === undefined) return;
+
+        if (element.value.trim() === "") {
+            element.value = newValue;
+        }
+    }
+
     var rawDataTextarea = document.getElementById("rawData");
     if (rawDataTextarea.addEventListener) {
         rawDataTextarea.addEventListener('input', function () {
@@ -426,21 +442,21 @@
     }
     const validTags = {{ validTags | tojson }};
 
-        function formatJSON() {
-            
-            try {
-                // 1. Parse the string into a JavaScript Object
-                const jsonObject = JSON.parse(rawDataTextarea.value);
-                
-                // 2. Stringify it back with 4 spaces of indentation
-                const indentedJSON = JSON.stringify(jsonObject, null, 4);
-                
-                // 3. Update the textarea value
-                rawDataTextarea.value = indentedJSON;
-            } catch (error) {
-                alert("Invalid JSON! Please check your syntax.");
-            }
+    function formatJSON() {
+
+        try {
+            // 1. Parse the string into a JavaScript Object
+            const jsonObject = JSON.parse(rawDataTextarea.value);
+
+            // 2. Stringify it back with 4 spaces of indentation
+            const indentedJSON = JSON.stringify(jsonObject, null, 4);
+
+            // 3. Update the textarea value
+            rawDataTextarea.value = indentedJSON;
+        } catch (error) {
+            alert("Invalid JSON! Please check your syntax.");
         }
+    }
 
 
     /* Converts the silly minecraft types to my own more easily usable ones. */
@@ -780,12 +796,13 @@
 
         // Update HTML elements
         document.getElementById("itemPreview").innerHTML = finalHTML;
-        if (finalItemType) document.getElementById('PrimaryTagGroup').value = finalItemType;
-        document.getElementById('WinPercentageGroup').value = WinPercentage;
-        document.getElementById('RarityGroup').value = RarityHuman;
-        document.getElementById('RarityHTMLGroup').value = RarityHTML;
-        document.getElementById('ItemNameGroup').value = finalItemNameHuman;
-        document.getElementById('ItemNameHTMLGroup').value = finalItemNameHTML;
+        setValueIfEmpty("PrimaryTagGroup", finalItemType);
+        setValueIfEmpty("WinPercentageGroup", WinPercentage);
+        setValueIfEmpty("RarityGroup", RarityHuman);
+        setValueIfEmpty("RarityHTMLGroup", RarityHTML);
+        setValueIfEmpty("ItemNameGroup", finalItemNameHuman);
+        setValueIfEmpty("ItemNameHTMLGroup", finalItemNameHTML);
+
         document.getElementById('RawData').value = JSON.stringify(rawData);
         document.getElementById('HumanData').value = finalHuman;
         document.getElementById('HTMLData').value = finalHTML;
