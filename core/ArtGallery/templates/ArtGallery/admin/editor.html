@@ -1,0 +1,112 @@
+{% set Title = ('Edit Art' if piece else ('Add Art Others' if other else 'Add Art')) %}
+{% set UseSEO = false %}
+{% set Description = "Add new art to the site!" %}
+{% set UseTracker = false %}
+{% extends 'ArtGallery/IntegratedLayout.html' %}
+{% block content %}
+<style>
+    .input-group-text,
+    .form-select {
+        font-size: 16px;
+    }
+
+</style>
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{Title}}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to add new art pieces to the site. Instructions at the bottom of the page.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<form id="art-editor" class="card bg-dark text-white" method="post" enctype="multipart/form-data"
+    action="{{ request.path }}" data-layout='{{ piece.layout|tojson if piece else "[[null]]" }}'
+    data-existing='{{ existing|tojson }}' data-art-id="{{ piece.id if piece else '' }}"
+    data-static-root="{{ url_for('static', filename='images/Art') }}">
+    <div class="card-body">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="layout" id="art-layout-data">
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6"><label class="form-label" for="art-name">Art Name</label><input
+                    class="form-control" id="art-name" name="name" maxlength="150" required
+                    value="{{ piece.name if piece else '' }}"></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="art-server">Server</label><select
+                    class="form-select" id="art-server" name="server" required>
+                    <option value="">Choose a server</option>{% for server in servers %}<option value="{{ server }}" {%
+                        if piece and piece.server==server %} selected{% endif %}>{{ server }}</option>{% endfor %}
+                </select></div>
+            {% if other %}
+            <div class="col-12 col-md-6"><label class="form-label" for="art-creator-user">Site user
+                    (optional)</label><select class="form-select" id="art-creator-user" name="creator_user_id">
+                    <option value="">Creator is not a site user</option>{% for user in users %}<option
+                        value="{{ user.id }}" {% if piece and piece.creator_user_id==user.id %} selected{% endif %}>{{
+                        user.username }}</option>{% endfor %}
+                </select></div>
+            <div class="col-12 col-md-6"><label class="form-label" for="art-creator-name">Creator name (if no site
+                    user)</label><input class="form-control" id="art-creator-name" name="creator_name" maxlength="100"
+                    value="{{ piece.creator_name if piece and not piece.creator_user_id else '' }}">
+                <div class="form-text text-white-50">Use this for Bedrock players or anyone without an account.</div>
+            </div>
+            {% else %}<div class="col-12">
+                <p class="mb-0">Creator: <strong>{{ current_user.username }}</strong></p>
+            </div>{% endif %}
+            <div class="col-12 col-md-6"><label class="form-label" for="art-purchase">Where to purchase</label><input
+                    class="form-control" id="art-purchase" name="purchase_location" maxlength="250"
+                    placeholder="/pw suchAndSuch or leave blank" value="{{ piece.purchase_location if piece else '' }}">
+            </div>
+            <div class="col-12 col-md-6"><label class="form-label" for="art-price">Price</label><input
+                    class="form-control" id="art-price" name="price" maxlength="100"
+                    placeholder="e.g. $500" value="{{ piece.price if piece else '' }}"></div>
+            <div class="col-12"><label class="form-label" for="art-notes">Notes</label><textarea class="form-control"
+                    id="art-notes" name="notes" maxlength="2000" rows="5">{{ piece.notes if piece else '' }}</textarea>
+                <div class="form-text text-white-50">Up to 2,000 characters.</div>
+            </div>
+        </div>
+
+        <h2 class="h4">Arrange tiles</h2>
+        <p>Choose all 128×128 PNG tiles, then drag them into the layout. You can also click a tile and then click a
+            space. Use “Place blank” for a transparent gap. Every newly uploaded tile must be placed before saving.</p>
+        <label class="form-label" for="art-files">PNG tiles</label>
+        <input class="form-control mb-3" id="art-files" name="tiles" type="file" accept=".png,image/png" multiple>
+        <div id="art-error" class="alert alert-danger d-none" role="alert"></div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-outline-light" type="button" id="add-row">Add row</button>
+            <button class="btn btn-outline-light" type="button" id="place-blank">Place blank</button>
+            <button class="btn btn-outline-light" type="button" id="clear-selection">Clear selection</button>
+        </div>
+        <h3 class="h5">Unused tiles</h3>
+        <div id="art-tray" class="art-tray mb-4" aria-label="Unused tiles"></div>
+        <h3 class="h5">Layout</h3>
+        <div class="art-editor-scroll">
+            <div id="art-grid" class="art-editor-grid" aria-label="Art tile layout"></div>
+        </div>
+        <button class="btn btn-success mt-4" type="submit">Save Art</button>
+    </div>
+</form>
+<div class="row gx-3 gy-3 mt-2 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">Instructions</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark text-white">Only 128x128 pixel images can be uploaded. The easiest way to get the images of the artwork is with the mod Map.png on <a href="https://modrinth.com/mod/map.png">Modrinth</a>.</li>
+                <li class="list-group-item bg-dark text-white">Go to <code>Settings>Controls>Map.png>Download Map</code> and set whatever keybind you like, I personally use F8 (default), but whatever is most convenient for you will work.</li>
+                <li class="list-group-item bg-dark text-white">Look at a map in an item frame, or hold it in your hand and press the Download Map key you set in the previous step.</li>
+                <li class="list-group-item bg-dark text-white">From there, you should see a message in chat saying something along the lines of <code>Downloaded: map_{nums}.png</code>. This is the 128x128 copy of the map that you will be uploading to the site.</li>
+                <li class="list-group-item bg-dark text-white">Repeat the previous two steps until you have downloaded a copy of each piece of the artwork you want to upload.</li>
+                <li class="list-group-item bg-dark text-white">Fill out the details in the above form, Only <code>Art Name</code> and <code>Server</code> are required, however you can optionally add extra details if you would like to do so.</li>
+                <li class="list-group-item bg-dark text-white">Click <code>Choose Files</code>, and select all of the pieces of the map you'd like to upload. They will be in <code>Instance Folder/maps/multiplayer/{Server IP}</code>. The easiest way to get to your Instance Folder is to go to your resource packs ingame, then click open pack folder, and go back one folder.</li>
+                <li class="list-group-item bg-dark text-white">Use the Layout Builder to organize all of your map pieces into their respective places. This is a Drag and Drop system, so.. Drag things, and drop them. There are buttons available to add extra columns and rows as needed. Blank spaces are perfectly allowed as well, for those of you with weirdly shaped maparts.</li>
+                <li class="list-group-item bg-dark text-white">Click <code>Save Art</code>, and voila! Your art is now visible for all to see!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='javascript/art-gallery-editor.js') }}" defer></script>{% endblock %}

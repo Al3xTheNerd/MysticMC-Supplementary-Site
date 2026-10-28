@@ -106,7 +106,7 @@ def ManageUser_POST(userID: int):
 @bp.route('/admin/logs/<logType>')
 @permission_level_required(90)
 def viewLogs(logType):
-    validTypes = ["All", "Item", "Crate", "Set", "User", "Group", "Misc Item"]
+    validTypes = ["All", "Item", "Crate", "Set", "User", "Group", "Misc Item", "Art"]
     if logType in validTypes:
         if logType == "All":
             logs = Logs.query.order_by(Logs.id.desc()).all()

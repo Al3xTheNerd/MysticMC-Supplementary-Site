@@ -1,0 +1,26 @@
+{% set Title = piece.name %}
+{% set UseSEO = true %}
+{% set Description = piece.name ~ ' by ' ~ piece.creator_name ~ ' on ' ~ piece.server %}
+{% set UseTracker = true %}
+{% extends 'ArtGallery/IntegratedLayout.html' %}
+{% from 'ArtGallery/_art.html' import mosaic %}
+{% block content %}
+<div class="card bg-dark text-white">
+    <div class="card-body">
+        <h1>{{ piece.name }}</h1>
+        <p class="mb-3">By <a href="{{ url_for('ArtGallery.Creators', creator=piece.creator_name) }}">{{
+                piece.creator_name }}</a> · <a href="{{ url_for('ArtGallery.Server', server=piece.server) }}">{{
+                piece.server }}</a></p>
+        <div class="art-full-view">{{ mosaic(piece) }}</div>
+        <ul class="mt-4 mb-0">
+            <li><b>Where to purchase:</b> {{ piece.purchase_location or 'Not available' }}</li>
+            <li><b>Price:</b> {{ piece.price or 'Not listed' }}</li>
+            {% if piece.notes %}<li><b>Notes:</b> {{ piece.notes }}</li>{% endif %}
+        </ul>
+        {% if current_user.is_authenticated and (piece.creator_user_id == current_user.id or
+        current_user.has_permission('manage_art_others')) %}
+        <a class="btn btn-outline-light mt-3" href="{{ url_for('ArtGallery.EditArt', art_id=piece.id) }}">Edit Art</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
