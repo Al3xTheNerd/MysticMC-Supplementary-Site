@@ -1,0 +1,46 @@
+{% set Title = 'Sort By Creator' %}
+{% set UseSEO = true %}
+{% set Description = "View art on the server, seperated into categories based on the creator name." %}
+{% set UseTracker = true %}
+{% extends 'ArtGallery/IntegratedLayout.html' %}
+{% from 'ArtGallery/_art.html' import mosaic %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{Title}}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">This page is used to view art by a specific person.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row g-3">
+    <div class="col-12 col-md-3">
+        <div class="list-group">
+            {% for creator, count in creators %}
+            <a class="list-group-item list-group-item-action bg-dark text-white{% if selected == creator %} active{% endif %}"
+                href="{{ url_for('ArtGallery.Creators', creator=creator) }}">{{ creator }} <span
+                    class="badge bg-secondary float-end">{{ count }}</span></a>
+            {% else %}<div class="list-group-item bg-dark text-white">No creators yet.</div>{% endfor %}
+        </div>
+    </div>
+    <div class="col-12 col-md-9">
+        {% if pieces %}
+        <h2 class="text-white h4">{{ selected or 'All creators' }}</h2>
+        <div class="art-card-grid">{% for piece in pieces %}
+            <article class="card bg-dark text-white art-card"><a class="art-preview"
+                    href="{{ url_for('ArtGallery.Piece', art_id=piece.id) }}">{{ mosaic(piece, true) }}</a>
+                <div class="card-body">
+                    <h3 class="h5"><a href="{{ url_for('ArtGallery.Piece', art_id=piece.id) }}">{{ piece.name }}</a>
+                    </h3><span>{{ piece.creator_name }} · {{ piece.server }}</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}<p class="text-white">No art found.</p>{% endif %}
+    </div>
+</div>
+{% endblock %}

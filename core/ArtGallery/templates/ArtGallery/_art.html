@@ -1,0 +1,15 @@
+{% macro mosaic(piece, preview=false) %}
+<div class="art-mosaic{% if preview %} art-mosaic-preview{% endif %}" role="img"
+    aria-label="{{ piece.name }} by {{ piece.creator_name }}"
+    style="--art-columns: {{ piece.layout|map('length')|max }}; --art-rows: {{ piece.layout|length }}">
+    {% for row in piece.layout %}
+    <div class="art-mosaic-row">
+        {% for tile in row %}
+        {% if tile is none %}<span class="art-mosaic-blank" aria-hidden="true"></span>
+        {% else %}<img src="{{ url_for('static', filename='images/Art/' ~ piece.id ~ '/' ~ tile ~ '.png') }}"
+            width="128" height="128" alt="" loading="lazy">{% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endmacro %}

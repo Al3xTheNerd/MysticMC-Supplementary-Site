@@ -1,0 +1,42 @@
+{% set Title = heading %}
+{% set UseSEO = true %}
+{% set Description = 'Browse player art from Arcane, Cosmic, and Elysium.' %}
+{% set UseTracker = true %}
+{% extends 'ArtGallery/IntegratedLayout.html' %}
+{% from 'ArtGallery/_art.html' import mosaic %}
+{% block content %}
+<div class="row gx-3 gy-3 mb-3">
+    <div class="col-12">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h4 class="card-title">{{heading}}</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item mc-gold bg-dark">All Artworks uploaded to the website{%if server%} for {{server}}{%endif%}. Click on an artwork to see it in a larger scale, as well as get extra information on where to get it.</li>
+                {% if not server %}
+                <li class="list-group-item mc-gold bg-dark">If you are unable to download the mod used to upload art for some reason, please DM AlexTheNerd on Discord so we can discuss how to get your art on here. (you will still need to make an account on the site)</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% if pieces %}
+<div class="art-card-grid">
+    {% for piece in pieces %}
+    <article class="card text-white bg-dark art-card">
+        <a class="art-preview" href="{{ url_for('ArtGallery.Piece', art_id=piece.id) }}"
+            aria-label="View {{ piece.name }}">{{ mosaic(piece, true) }}</a>
+        <div class="card-body">
+            <h2 class="h5 card-title"><a href="{{ url_for('ArtGallery.Piece', art_id=piece.id) }}">{{ piece.name }}</a>
+            </h2>
+            <p class="card-text mb-1">By <a href="{{ url_for('ArtGallery.Creators', creator=piece.creator_name) }}">{{
+                    piece.creator_name }}</a></p>
+            <p class="card-text text-white-50 mb-0">{{ piece.server }} · {{piece.width}}x{{piece.height}}</p>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}<div class="card bg-dark text-white">
+    <div class="card-body">No art has been added here yet.</div>
+</div>{% endif %}
+{% endblock %}

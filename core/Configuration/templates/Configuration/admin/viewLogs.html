@@ -55,6 +55,8 @@
                                     <td scope="col"><a href='{{url_for('manageGroups')}}'>Manage Groups</a></td>
                                 {% elif log.Type == "Misc Item" and log.RelatedID %}
                                     <td scope="col"><a href='{{url_for('manageMiscItem', itemID=log.RelatedID)}}'>Manage Misc Item</a></td>
+                                {% elif log.Type == "Art" and log.RelatedID and log.Message != "deleted art." %}
+                                    <td scope="col"><a href="{{ url_for('ArtGallery.Piece', art_id=log.RelatedID) }}">View Art</a></td>
                                 {% else %}
                                     <td scope="col"></td>
                                 {% endif %}
