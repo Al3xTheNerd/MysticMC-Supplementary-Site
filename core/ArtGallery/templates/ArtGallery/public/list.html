@@ -32,6 +32,11 @@
             <p class="card-text mb-1">By <a href="{{ url_for('ArtGallery.Creators', creator=piece.creator_name) }}">{{
                     piece.creator_name }}</a></p>
             <p class="card-text text-white-50 mb-0">{{ piece.server }} · {{piece.width}}x{{piece.height}}</p>
+            {% if piece.purchase_location or piece.price %}
+                <p class="card-text text-white-50 mb-0">
+                    {{ [piece.purchase_location, piece.price] | select | join(' · ') }}
+                </p>
+            {% endif %}
         </div>
     </article>
     {% endfor %}
