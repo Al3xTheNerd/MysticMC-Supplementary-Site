@@ -17,7 +17,8 @@ tags: Dict[str, List[str]] = {
         "Chestplate",
         "Leggings",
         "Boots",
-        "Elytra"
+        "Elytra",
+        "Wings"
     ],
     "Tools" : [
         "Pickaxe",
