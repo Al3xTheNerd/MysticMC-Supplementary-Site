@@ -78,6 +78,7 @@ tags: Dict[str, List[str]] = {
         "Furniture Dropping",
         "Reach Distance",
         "Pets"
+        # "Linked Container"
     ]
 }
 # This auto generates a flat list of the tags, to be used in places such as advanced search as well as when adding new items

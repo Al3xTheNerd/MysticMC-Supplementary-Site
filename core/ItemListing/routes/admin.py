@@ -198,7 +198,13 @@ def ManageItem(itemID):
                     else:
                         item.EfficiencyLevel = int(request.form.get("Efficiency", item.EfficiencyLevel))
                     
-                    
+                    if old["RawData"] != request.form.get("RawData", item.RawData):
+                        if platform == "win32":
+                            loc = Path(f"core/_Shared/static/images/Descriptions/{item.id}.png")
+                        else:
+                            loc = Path(f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Descriptions/{item.id}.png")
+                        loc.unlink(missing_ok=True)
+                        flash("Deleted Lore image to be regenerated. It will be regenerated within the next hour for the bot.")
                     
                     item.ConnectedItems = request.form.get("ConnectedItems", item.ConnectedItems)
                     new = item.to_dict("*")
