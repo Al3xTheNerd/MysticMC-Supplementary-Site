@@ -9,7 +9,7 @@ import os
 
 from core.Configuration.models import User, Logs, Queue
 from core.extensions import db
-from core.Configuration.decorators import permission_level_required, has_permission
+from core.Configuration.decorators import permission_level_required, has_permission, admin_api_permission
 from core.Configuration.models import uploadLog
 from core.utils import randomCode
 from core.permissions import RegisteredPermissions
@@ -97,6 +97,10 @@ def ManageUser_POST(userID: int):
             user.hasProfileImage = "https://vzge.me/head/256/X-Steve"
         case "AllowPicture":
             user.set_image_link(True)
+        case "RevokeAPI":
+            user.disableToken()
+        case "CreateAPIKey":
+            user.reenableToken()
         case _:
             flash("Form not dectected.")
     db.session.commit()
@@ -117,32 +121,32 @@ def viewLogs(logType):
     else:
         flash("Please select a valid log type.")
         return redirect(url_for("_Shared.Index"))
-    
+
+
 @bp.route('/admin/addtoqueue', methods=["POST"])
+@admin_api_permission(90)
 def AddToQueue():
     form = request.form.to_dict()
-    if form["apiKey"] == apiKey:
-        newQueueItem = Queue(ItemData = form.get("json"), Extension = form.get("extension").replace(".", "")) # type: ignore
-        db.session.add(newQueueItem)
-        db.session.commit()
-
-        if 'image' in request.files:
-            file = request.files['image']
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-            
-            if file and file.filename:
-                filename =  f"{newQueueItem.id}{form.get("extension")}"
-                if filename:
-                    if platform == "win32":
-                        loc = f"core/_Shared/static/images/Queue/"
-                    else:
-                        loc = f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Queue/"
-                    
-                    db.session.commit()
-                    file.save(os.path.join(loc, filename))
-    return ""
+    newQueueItem = Queue(ItemData = form.get("json"), Extension = form.get("extension").replace(".", "")) # type: ignore
+    db.session.add(newQueueItem)
+    db.session.commit()
+    if 'image' in request.files:
+        file = request.files['image']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if file and file.filename:
+            filename =  f"{newQueueItem.id}{form.get("extension")}"
+            if filename:
+                if platform == "win32":
+                    loc = f"core/_Shared/static/images/Queue/"
+                else:
+                    loc = f"/home/blossomcraft/MysticMC/core/_Shared/static/images/Queue/"
+                
+                db.session.commit()
+                file.save(os.path.join(loc, filename))
+    return "True"
 
 @bp.route("/admin/viewqueue")
 @has_permission("view_queue")

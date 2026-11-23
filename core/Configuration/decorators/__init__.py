@@ -1,2 +1,3 @@
 from core.Configuration.decorators.permission_required import permission_level_required
 from core.Configuration.decorators.has_permission import has_permission
+from core.Configuration.decorators.admin_api_permission import admin_api_permission

@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from core.extensions import db, login_manager
 
 from core.permissions import getFlattenedPermissions
+from core.utils import randomCode
 from json import loads, dumps
 
 class User(UserMixin, db.Model):
@@ -15,6 +16,20 @@ class User(UserMixin, db.Model):
     staffRole = db.Column(db.String(32))
     hasProfileImage = db.Column(db.String(64))
     maintainerStatus = db.Column(db.String(32))
+    apiToken = db.Column(db.String(128))
+    
+    def setToken(self):
+        if self.apiToken != "DISABLED":
+            self.apiToken = randomCode(128)
+            db.session.commit()
+    
+    def disableToken(self):
+        self.apiToken = "DISABLED"
+        db.session.commit()
+    
+    def reenableToken(self):
+        self.apiToken = ""
+        self.setToken()
     
     def _verifyValidPermissionNodes(self):
         current_permissions = loads(self.permissionNodes if self.permissionNodes else "{}")
