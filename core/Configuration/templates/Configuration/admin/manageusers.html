@@ -30,6 +30,7 @@
                                 <th scope="col">Permissions Integer</th>
                                 <th scope="col">Staff Role</th>
                                 <th scope="col">Maintainer</th>
+                                <th scope="col">API Token</th>
                                 <th scope="col">Manage User</th>
                                 <th scope="col">Password</th>
                                 
@@ -43,6 +44,11 @@
                                 <td scope="col">{{user.permissions}}</td>
                                 <td scope="col">{{user.staffRole}}</td>
                                 <td scope="col">{{user.maintainerStatus}}</td>
+                                {% if user.apiToken not in [none, "DISABLED"] %}
+                                    <td scope="col"><code>YES</code></td>
+                                {% else %}
+                                    <td scope="col"><code>NO</code></td>
+                                {% endif %}
                                 <td scope="col"><a href='{{url_for('Configuration.ManageUser', userID=user.id)}}'>Manage User</a></td>
                                 <td scope="col"><a href='{{url_for('Configuration.ForceResetPass', userID=user.id)}}'>Force reset password.</a></td>
                             </tr>
